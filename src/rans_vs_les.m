@@ -21,8 +21,8 @@ hump_surface = load('hump_surface.mat');
 hump_surface = hump_surface.hump_surface;
 
 % Number of points to plot contour
-xpoint = 500;
-ypoint = 500;
+xpoint = 6000;
+ypoint = 1000;
 
 % Global limits
 xbound = [0.7, 1.5];
@@ -98,7 +98,7 @@ while size(model_coor,1) < nmod && ii <= xpoint*ypoint
 end
 
 %% Plot of difference
-fig = figure;
+figure(1);
 
 % difference threshold
 thresh = 0;
