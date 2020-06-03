@@ -17,6 +17,8 @@ options.writetofile = false;
 options.nsamplesnew = 60;
 options.nfiles      = 1;
 options.theta       = 'theta01';
+options.npredpoints = 1000;
+options.objective   = 'iterate';
 
 options.nsurrogate  = 10;
 options.activesrrgt = 1;
@@ -47,6 +49,18 @@ init_parallel(options);
 
 % Calculate the hyperparameters of the Gaussian Correlation Function
 [GEK.theta, GEK.ln_likelihood] = hyper_param(samples, options);
+
+% Find Correlation matrix and Kriging mean using the hyperparameters
+[GEK.R] = corrmat(samples, GEK.theta);
+[GEK.mu, GEK.sighat] = kriging_mean(samples, GEK.R);
+
+% Generate prediction points for GEK prediction
+[predpoints] = generate_predpoints(samples, param, options);
+
+% Make GEK predictions
+fprintf('\n----- Making Predictions -----\n');
+[predpoints] = makeprediction(samples, predpoints, GEK);
+fprintf('-Complete\n');
 
 
 
