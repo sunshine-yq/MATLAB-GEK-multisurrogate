@@ -1,15 +1,5 @@
-function [R_gek] = corrmat(sample, theta)
-% Function to find the correlation between the sample points using Gausian
-% correlation function
-
-% == Inputs ==
-% sample = struct of sample points
-% theta = Gaussian correlation function parameter vector. one theta for
-% each dimension.
-
-% == Outputs ==
-% R_gek = N(d+1)xN(d+1) Correlation matrix between samlple points and
-% themselves. Includes Gradient correlations used in GEK
+function [R_gek] = corrmat(samples, theta)
+% Find the correlation between the sample points using Gausian correlation function
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % R is made of multiple sub-matrices. Each sub-matrix is constructed
@@ -17,8 +7,8 @@ function [R_gek] = corrmat(sample, theta)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Initialise
-n = sample.npoint;
-n_gek = sample.npoint_gek;
+n = samples.npoint;
+n_gek = samples.npoint_gek;
 R_gek = zeros(n_gek);
 
 p = 2; % Power of RBF. 2 = Gaussian Correlation. Fixed
@@ -26,9 +16,9 @@ p = 2; % Power of RBF. 2 = Gaussian Correlation. Fixed
 %% The standard kriging correlation matrix for all samples
 
 R = ones(n,n);
-for z=1:sample.ndim
+for z=1:samples.ndim
     R_int = zeros(n,n); % Intermediary Correlation function for each dimension
-    x = sample.input(:,z);
+    x = samples.input(:,z);
     k = 2; % Only populate upper triangle as matrix is symmetric
     for i=1:n-1
         for j=k:n
@@ -58,12 +48,12 @@ end
 
 %% The first derivative correlation matrices
 
-for z = 1:sample.ndim
+for z = 1:samples.ndim
     R = zeros(n);
     k = 2; % Only populate upper triangle as matrix is symmetric
     for i = 1:n-1
         for j = k:n
-            R(i,j) = +p*theta(z)*(sample.input(i,z)-sample.input(j,z)) ...
+            R(i,j) = +p*theta(z)*(samples.input(i,z)-samples.input(j,z)) ...
                 * R_gek(i,j);
         end
         k = k+1;
@@ -86,20 +76,20 @@ end
 
 %% The second derivative matrices
 
-for z1=1:sample.ndim
-    for z2=1:sample.ndim
+for z1=1:samples.ndim
+    for z2=1:samples.ndim
         R = zeros(n);
         k = 1; % Only populate upper triangle as matrix is symmetric
         for i=1:n
             for j=k:n
                 if z1==z2
                     R(i,j) = ...
-                        p*theta(z1)*(1-p*theta(z1)*((sample.input(i,z1)-sample.input(j,z2))^p))...
+                        p*theta(z1)*(1-p*theta(z1)*((samples.input(i,z1)-samples.input(j,z2))^p))...
                         *R_gek(i,j);
                 else
                     R(i,j) = ...
-                        -p*p*theta(z1)*theta(z2)*(sample.input(i,z1)-sample.input(j,z1))...
-                        *(sample.input(i,z2)-sample.input(j,z2))*R_gek(i,j);
+                        -p*p*theta(z1)*theta(z2)*(samples.input(i,z1)-samples.input(j,z1))...
+                        *(samples.input(i,z2)-samples.input(j,z2))*R_gek(i,j);
                 end
             end
             k = k+1;

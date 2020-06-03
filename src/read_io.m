@@ -1,6 +1,8 @@
 function [samples] = read_io(param, options)
 % Read the SU2 input and output files. These are the GEK samples
 
+%% Model dimension
+samples.ndim = length(fieldnames(param));
 %% Read Sample Space as GEK input
 % Read samples from files in folder
 infolder = strcat('Samples/',sprintf('M%.2i',options.activesrrgt),'/SU2_Input');
@@ -61,7 +63,7 @@ samples.outputgrad(:,param.cv1) = vertcat(outputarray{:,10});
 
 %% Augment sample output for GEK
 % GEK sample size
-samples.npoint_gek = (options.ndim + 1)*samples.npoint;
+samples.npoint_gek = (samples.ndim + 1)*samples.npoint;
 
 % Normalise the output by it's mean and standard deviation
 samples.output_mean = mean(samples.output);
@@ -73,20 +75,20 @@ samples.outputgrad_norm = samples.outputgrad/samples.output_sd;
 
 % Find average of abs of gradients to determine most important parameters
 % Only done to check later with optimum theta. Not used in GEK
-samples.outputgrad_avg = zeros(options.ndim,1);
-for z = 1:options.ndim
+samples.outputgrad_avg = zeros(samples.ndim,1);
+for z = 1:samples.ndim
    samples.outputgrad_avg(z) = mean(abs(samples.outputgrad(:,z))); 
 end
 
 % Create augmented output matrix by combining output and outputgrad
 samples.output_aug = samples.output_norm;
-for z = 1:options.ndim
+for z = 1:samples.ndim
     samples.output_aug = [samples.output_aug ; samples.outputgrad_norm(:,z)];
 end
 
 %% Print header to screen
 % % fprintf('\n***** GEK Problem Definition *****\n');
-% % fprintf('Number of dimensions   = %i\n',options.ndim);
+% % fprintf('Number of dimensions   = %i\n',samples.ndim);
 % % fprintf('Number of samples      = %i\n', sample.npoint);
 % % fprintf('Number of sample files = %i\n', options.nfiles);
 % % fprintf('Number of pred points  = %i\n', options.npred);

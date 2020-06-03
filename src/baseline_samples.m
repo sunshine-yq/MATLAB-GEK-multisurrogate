@@ -2,7 +2,7 @@ function baseline_samples(param, options)
 % Create baseline samples for SA design space
 
 npoint = options.nsamplesnew;
-ndim   = options.ndim;
+ndim   = length(fieldnames(param));
 % Halton sequence
 skip = floor(rand*1e7);
 leap = (nthprime(ndim+1)-1);
