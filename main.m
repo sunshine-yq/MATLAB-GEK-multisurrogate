@@ -6,33 +6,43 @@
 % Amir Bagheri
 % May 2020
 
-clear; close all; rng('shuffle');
-
-% Set path
-addpath(genpath('./'));
+clear; close all; addpath(genpath('./'));
 
 %% Set Options for running the code
 
-options.platform  = 'local'; % platform to run on (iridis/local)
-options.iterno = 0; %
-options.nmodel = 10;
-options.writetofile = true;
+options.platform    = 'local'; % platform to run on (iridis/local)
+options.iterno      = 2; %
+
+options.writetofile = false;
 options.nsamplesnew = 60;
+options.nfiles      = 1;
+
+options.nsurrogate  = 10;
+options.ndim        = 7;
+options.activesrrgt = 1;
 
 %%check_options()
 
 %% Run Program
 
+% Prepare environment for run
+prepare_env();
+
 % Create parameter struct and set integers to each parameter
 param.cb1 = 1; param.sig = 2; param.cb2 = 3; param.kar = 4;
 param.cw2 = 5; param.cw3 = 6; param.cv1 = 7;
 
-% Create baslines samples if at Iteration 0
-if options.iterno == 0
-   [samples] = baseline_samples(param, options); 
+% Create baslines samples if at Iteration 1 and stop progressing
+if options.iterno == 1
+   baseline_samples(param, options);
+   return;
 end
 
+% Read the samples
+[samples] = read_io(param, options);
 
+% Calculate the hyperparameters of the Gaussian Correlation Function
+[GEK.theta, GEK.ln_likelihood] = hyper_param(samples, options);
 
 % Initialise the parallel run
 % init_parallel(options);

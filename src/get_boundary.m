@@ -1,7 +1,5 @@
 function [boundary] = get_boundary(param)
-% define the physical boundary of the design parameters
-% input: struct par containing the parameters, options
-% output: boundaries for each parameter
+% Define the physical boundary of the design parameters
 
 boundary = zeros(numel(fieldnames(param)),2);
 boundary(param.cb1,:) = [0.129 0.14];

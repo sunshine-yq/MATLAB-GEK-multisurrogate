@@ -1,6 +1,5 @@
-function [mapped_samples] = map_samples(param,raw_samples, options)
-%Function to map samples between [0,1] to boundaries of the
-%design parameters. For NASA Hump case.
+function [mapped_samples] = map_samples(param,raw_samples)
+% Map [0,1] samples to boundaries of the design parameters. 
 
 % number of parameters
 ndim = length(fieldnames(param));
