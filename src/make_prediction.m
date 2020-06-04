@@ -1,4 +1,4 @@
-function [predictions] = makeprediction(samples, predictions, GEK)
+function [predictions] = make_prediction(samples, predictions, GEK)
 % Make GEK predictions on points to find output and MSE
 
 % Initialise arrays to store

@@ -20,7 +20,7 @@ surrogates_xy = surrogates_xy.surrogates_xy;
 
 %% Save samples to csv files for all surrogate models
 if options.writetofile
-    for ii = 1:options.nsurrogate
+    for ii = 1:options.nsurrogates
         filename = sprintf('Samples/M%.2i/SU2_Input/samples_I01.dat',ii);
         file = fopen(filename,'w');
         fprintf(file, '%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s \n', ...
@@ -40,17 +40,29 @@ fig = figure;
 sgtitle('Baselines Samples');
 addToolbarExplorationButtons(fig);
 
+% kar cb1 samples
+subplot(2,2,1)
+plot(samples(:,param.kar),samples(:,param.cb1),'*r');
+axis equal; grid;
+xlabel('kar'); ylabel('cb1');
+
 % sig cw2 samples
-subplot(2,1,1)
+subplot(2,2,2)
 plot(samples(:,param.sig),samples(:,param.cw2),'*r');
 axis equal; grid;
 xlabel('sig'); ylabel('cw2');
 
-% kar cb1 samples
-subplot(2,1,2)
-plot(samples(:,param.kar),samples(:,param.cb1),'*r');
+% cw3 cv1 samples
+subplot(2,2,3)
+plot(samples(:,param.cw3),samples(:,param.cv1),'*r');
 axis equal; grid;
-xlabel('kar'); ylabel('cb1');
+xlabel('cw3'); ylabel('cv1');
+
+% cw2 cb2 samples
+subplot(2,2,4)
+plot(samples(:,param.cw2),samples(:,param.cb2),'*r');
+axis equal; grid;
+xlabel('cw2'); ylabel('cb2');
 
 end
 

@@ -1,195 +1,68 @@
-function [] = plotgek(sample, param, pred, batch, pool, options)
+function [] = plotgek(samples, param, predictions, nextsamples, options)
 % Generate the plots
 
 close all;
 
 % Depending on objective, choose what to plot
-if strcmp(options.objective, 'batch')
-    plot_mse(sample, param, pred, batch, pool, options);
+if strcmp(options.objective, 'iterate')
+    plot_mse(samples, param, predictions, nextsamples, options);
 elseif strcmp(options.objective, 'verify')
-    plot_vel(sample, param, pred, options);
+    plot_vel(samples, param, predictions, options);
 end
 end
 
 %% MSE Plot
-function [] = plot_mse(sample, param, pred, batch, pool, options)
-% Plot MSE values of the prediction
-
-% General computations before plotting
+function [] = plot_mse(samples, param, predictions, nextsamples, options)
+% Plot MSE values of the prediction. 4 subplots for all 7 SA parameters
 
 % Get the boundaries of the design parameters for plotting
-boundary = get_boundary(param, options);
-% Get hump surface
-hump_surface = load('hump_surface.mat');
-hump_surface = hump_surface.hump_surface;
+boundary = get_boundary(param);
 
-% Extract sample points which fall in batch boundaries
-sample.input_pool = [];
-for i=1:sample.npoint
-    if sample.input(i,param.x) >= options.batchxbound(1) && ...
-       sample.input(i,param.x) <= options.batchxbound(2) && ...
-       sample.input(i,param.y) >= options.batchybound(1) && ...
-       sample.input(i,param.y) <= options.batchybound(2)    
-       
-       sample.input_pool = cat(1,sample.input_pool,sample.input(i,:));
-        
-    end
-end
+% Set the pairs to be plotted against eachother in each subplot
+plotpairs(1,:) = [param.kar param.cb1];
+plotpairs(2,:) = [param.sig param.cw2];
+plotpairs(3,:) = [param.cw3 param.cv1];
+plotpairs(4,:) = [param.cw2 param.cb2];
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Extract field names of param for axis labels
+paramnames = fieldnames(param);
 
-% main figure window
+% Plot figures
 fig = figure;
-sgtitle('GEK Prediction Mean Square Error');
+sgtitle(sprintf('GEK Prediction MSE - Surrogate M%.2i',options.activesrrgt));
 addToolbarExplorationButtons(fig);
 
-% MSE of prediction in X-Y space for both pred and pool
-
-% Interpolate the mse
-% Pred points
-interpx_pred = pred.mapped(:,param.x);
-interpy_pred = pred.mapped(:,param.y);
-interpz_pred = pred.mse;
-interp = scatteredInterpolant(interpx_pred, interpy_pred, interpz_pred, 'linear', 'nearest');
-x = linspace(boundary(param.x,1),boundary(param.x,2),1000);
-y = linspace(boundary(param.y,1),boundary(param.y,2),1000);
-[Xpred,Ypred] = meshgrid(x,y);
-% Restack meshgrid to remove y points inside hump
-for i=1:length(x)
-   if Xpred(1,i) > 0 && Xpred(1,i) < 1
-       Ypred(:,i) = linspace(hump_surface(Xpred(1,i)),boundary(param.y,2),length(y))';
-   end
-end
-Zpred = interp(Xpred,Ypred);
-
-% Pool points
-interpx_pool = pool.mapped(:,param.x);
-interpy_pool = pool.mapped(:,param.y);
-interpz_pool = pool.mse;
-interp = scatteredInterpolant(interpx_pool, interpy_pool, interpz_pool, 'linear', 'nearest');
-x = linspace(options.batchxbound(1),options.batchxbound(2),1000);
-y = linspace(options.batchybound(1),options.batchybound(2),1000);
-[Xpool,Ypool] = meshgrid(x,y);
-% Restack meshgrid to remove y points inside hump 
-for i=1:length(x)
-   if Xpool(1,i) > 0 && Xpool(1,i) < 1
-       if Ypool(1,i) < hump_surface(Xpool(1,i)) % only if hump located in pool window
-           Ypool(:,i) = linspace(hump_surface(Xpool(1,i)),options.batchybound(2),length(y))';
-       end
-   end
-end
-Zpool = interp(Xpool,Ypool);
-
-% plot the pred mse
-p{1} = subplot(3,2,[1,2]);
-contlevels = linspace(0,pred.mse_sortval(1),40);
-contourf(Xpred,Ypred,Zpred,contlevels,'LineColor','none','HandleVisibility','off');
-axis equal; hold on
-c{1} = colorbar(p{1});
-xlabel('x/c'); ylabel('y/c')
-% caxis([0 pred.mse_sortval(1)]);
-xlim(boundary(param.x,:));
-ylim(boundary(param.y,:));
-title('Full X-Y Design Space');
-
-% plot the pool mse
-p{2} = subplot(3,2,[3,4]);
-contlevels = linspace(0,pool.mse_sortval(1),40);
-contourf(Xpool,Ypool,Zpool,contlevels,'LineColor','none','HandleVisibility','off');
-axis equal; hold on
-c{2} = colorbar(p{2});
-xlabel('x/c'); ylabel('y/c')
-% caxis([0 pool.mse_sortval(1)]);
-xlim(options.batchxbound);
-ylim(options.batchybound);
-title('Windowed X-Y Design Space');
-
-% plot the batch window rectangle on pred plot
-rec_w = options.batchxbound(2) - options.batchxbound(1);
-rec_h = options.batchybound(2) - options.batchybound(1);
-rectangle(p{1},'Position',[options.batchxbound(1) options.batchybound(1) ...
-    rec_w rec_h],'EdgeColor','r','LineWidth',2)
-
-% plot hump and samples and batch on both plots
-x = linspace(0,1,1000)';
-y = hump_surface(x);
-for i=1:length(p)
-    area(p{i},x,y,0,'FaceColor','none','HandleVisibility','off')
-    plot(p{i},batch.point(:,param.x),batch.point(:,param.y),'*r','linewidth',1)
-%     viscircles(p{i},batch.pointxy,batch.radius,'color','k','linewidth',1);
-    if i == 1
-        plot(p{i},sample.input(:,param.x),sample.input(:,param.y),'xy','linewidth',1);
-%         plot(p{i},interpx_pred,interpy_pred,'.m');
-    elseif i ==2 % in this plot only plot sample points inside the pool boundary
-        plot(p{i},sample.input_pool(:,param.x),sample.input_pool(:,param.y),'xy','linewidth',1);
-%         plot(p{i},interpx_pool,interpy_pool,'.m');
-    end
+for i=1:4    
+    % Interpolate the mse
+    interpx = predictions.mapped(:,plotpairs(i,1));
+    interpy = predictions.mapped(:,plotpairs(i,2));
+    interpz = predictions.mse;
+    interp = scatteredInterpolant(interpx, interpy, interpz, 'linear', 'nearest');
+    
+    x = linspace(boundary(plotpairs(i,1),1),boundary(plotpairs(i,1),2),1000);
+    y = linspace(boundary(plotpairs(i,2),1),boundary(plotpairs(i,2),2),1000);
+    [X,Y] = meshgrid(x,y);
+    Z = interp(X,Y);
+    
+    % plot the mse
+    p = subplot(2,2,i);
+    contlevels = linspace(0,predictions.mse_sortval(1),40);
+    contourf(X,Y,Z,contlevels,'LineColor','none','HandleVisibility','off');
+    colorbar; hold on
+    xlabel(paramnames(plotpairs(i,1))); ylabel(paramnames(plotpairs(i,2)));
+    p.FontWeight = 'bold';
+    axis equal
+    
+    % plot current and new samples
+    plot(samples.input(:,plotpairs(i,1)),samples.input(:,plotpairs(i,2)),'xy','linewidth',1);
+    plot(nextsamples.input(:,plotpairs(i,1)),nextsamples.input(:,plotpairs(i,2)),'*r','linewidth',1)
+%     plot(interpx,interpy,'.m');
 end
 
-% Add legend
-l = legend(p{1},'Batch','Samples');
-l.Position(1) = c{1}.Position(1);
-l.Position(2) = c{1}.Position(2) - 0.1;
-l.Color = 'k'; l.TextColor = 'w';
-l.LineWidth = 1.0; l.FontSize = 9.0; l.FontWeight='bold';
-
-%##########################################################################
-
-% MSE in kar-cb1 space
-
-% Interpolate the mse, full design space
-interpx = pred.mapped(:,param.kar);
-interpy = pred.mapped(:,param.cb1);
-interpz = pred.mse;
-interp = scatteredInterpolant(interpx, interpy, interpz, 'linear', 'nearest');
-
-x = linspace(boundary(param.kar,1),boundary(param.kar,2),1000);
-y = linspace(boundary(param.cb1,1),boundary(param.cb1,2),1000);
-[X,Y] = meshgrid(x,y);
-Z = interp(X,Y);
-
-% plot the mse
-subplot(3,2,5);
-contourf(X,Y,Z,40,'LineColor','none','HandleVisibility','off')
-colorbar; hold on
-xlabel('kar'); ylabel('cb1')
-caxis([0 pred.mse_sortval(1)]);
-title('Full kar-cb1 Design Space');
-
-% plot samples and batch
-plot(sample.input(:,param.kar),sample.input(:,param.cb1),'xy','linewidth',1);
-plot(batch.point(:,param.kar),batch.point(:,param.cb1),'*r','linewidth',1)
-% plot(interpx,interpy,'.m');
-
-%##########################################################################
-
-% MSE in sig-cw2 space
-
-% Interpolate the mse, full design space
-interpx = pred.mapped(:,param.sig);
-interpy = pred.mapped(:,param.cw2);
-interpz = pred.mse;
-interp = scatteredInterpolant(interpx, interpy, interpz, 'linear', 'nearest');
-
-x = linspace(boundary(param.sig,1),boundary(param.sig,2),1000);
-y = linspace(boundary(param.cw2,1),boundary(param.cw2,2),1000);
-[X,Y] = meshgrid(x,y);
-Z=interp(X,Y);
-
-% plot the mse
-subplot(3,2,6);
-contourf(X,Y,Z,40,'LineColor','none','HandleVisibility','off')
-colorbar; hold on
-xlabel('sig'); ylabel('cw2')
-caxis([0 pred.mse_sortval(1)]);
-title('Full sig-cw2 Design Space');
-
-% plot samples and batch
-plot(sample.input(:,param.sig),sample.input(:,param.cw2),'xy','linewidth',1);
-plot(batch.point(:,param.sig),batch.point(:,param.cw2),'*r','linewidth',1)
-% plot(interpx,interpy,'.m');
-
-%##########################################################################
+    l = legend('current','new');
+    l.Color = 'k'; l.TextColor = 'w';
+    l.LineWidth = 1.0; l.FontSize = 9.0; l.FontWeight='bold';
+    l.Position = [0.829 0.927 0.145 0.045];
 end
 
 %% Velocity Plot
@@ -221,9 +94,9 @@ y = linspace(boundary(param.y,1),boundary(param.y,2),1000);
 [X,Y] = meshgrid(x,y);
 % Restack meshgrid to remove y points inside hump
 for i=1:length(x)
-   if X(1,i) > 0 && X(1,i) < 1
-       Y(:,i) = linspace(hump_surface(X(1,i)),boundary(param.y,2),length(y))';
-   end
+    if X(1,i) > 0 && X(1,i) < 1
+        Y(:,i) = linspace(hump_surface(X(1,i)),boundary(param.y,2),length(y))';
+    end
 end
 
 Z = interp(X,Y);

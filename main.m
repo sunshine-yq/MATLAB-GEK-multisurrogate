@@ -10,22 +10,20 @@ clear; close all; addpath(genpath('./'));
 
 %% Set Options for running the code
 
-options.platform    = 'local'; % platform to run on (iridis/local)
-options.iterno      = 2; %
+options.nsurrogates  = 10;
+options.activesrrgt  = 1;
 
-options.writetofile  = true;
-options.nnextsamples = 60;
-options.nfiles       = 1;
-options.theta        = 'theta01';
-options.npredpoints  = 1000;
+options.platform     = 'local';
 options.objective    = 'iterate';
-options.xcludradmax  = 0.02; % maximum exclusion radius 
-options.xcludtanh    = 3; % tanh factor p. larger = more space b/w samples
 
-options.nsurrogate  = 10;
-options.activesrrgt = 1;
+options.nfiles       = 1;
+options.npredpoints  = 1000;
+options.nnextsamples = 60;
+options.theta        = 'theta01';
 
-%%check_options()
+options.writetofile  = false;
+
+check_options(options)
 
 %% Run Program
 
@@ -37,8 +35,8 @@ prepare_env();
 param.cb1 = 1; param.sig = 2; param.cb2 = 3; param.kar = 4;
 param.cw2 = 5; param.cw3 = 6; param.cv1 = 7;
 
-% Create baslines samples if at Iteration 1 and stop progressing
-if options.iterno == 1
+% Create baslines samples if at first iteration and stop progressing
+if options.nfiles == 0
    baseline_samples(param, options);
    return;
 end
@@ -61,7 +59,7 @@ init_parallel(options);
 
 % Make GEK predictions
 fprintf('\n----- Making Predictions -----\n');
-[predictions] = makeprediction(samples, predictions, GEK);
+[predictions] = make_prediction(samples, predictions, GEK);
 fprintf('-Complete\n');
 
 % Find next iteration of sample points
@@ -70,6 +68,19 @@ if strcmp(options.objective, 'iterate')
     [nextsamples] = next_iteration(predictions, options);
     fprintf('-Complete\n');
 end
+
+% Generate plots if on local
+if strcmp(options.platform, 'local')
+    plotgek(samples, param, predictions, nextsamples, options)
+end
+
+% Save the workspace variables if on Iridis
+if strcmp(options.platform, 'iridis')
+    save(sprintf('Iridisout/allvars_%s',options.objective));
+end
+
+% Confirm success
+fprintf('\n***** All Complete *****\n');
 
 
 

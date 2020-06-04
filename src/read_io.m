@@ -87,15 +87,15 @@ for z = 1:samples.ndim
 end
 
 %% Print header to screen
-% % fprintf('\n***** GEK Problem Definition *****\n');
-% % fprintf('Number of dimensions   = %i\n',samples.ndim);
-% % fprintf('Number of samples      = %i\n', sample.npoint);
-% % fprintf('Number of sample files = %i\n', options.nfiles);
-% % fprintf('Number of pred points  = %i\n', options.npred);
-% % fprintf('Program objective      = %s\n', options.objective);
-% % if strcmp(options.objective,'batch')
-% %     fprintf('Points in next batch   = %i\n', options.nbatch);
-% % end
+fprintf('\n***** GEK Problem Definition *****\n');
+fprintf('Active surrogate       = M%.2i\n', options.activesrrgt);
+fprintf('Number of samples      = %i\n', samples.npoint);
+fprintf('Number of sample files = %i\n', options.nfiles);
+fprintf('Number of pred points  = %i\n', options.npredpoints);
+fprintf('Program objective      = %s\n', options.objective);
+if strcmp(options.objective,'iterate')
+    fprintf('Number of next samples = %i\n', options.nnextsamples);
+end
 
 end
 
