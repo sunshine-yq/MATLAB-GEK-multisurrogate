@@ -1,12 +1,12 @@
-function [predpoints] = makeprediction(samples, predpoints, GEK)
+function [predictions] = makeprediction(samples, predictions, GEK)
 % Make GEK predictions on points to find output and MSE
 
 % Initialise arrays to store
-predoutput = zeros(predpoints.npoint, 1);
-predmse = zeros(predpoints.npoint, 1);
+predoutput = zeros(predictions.npoint, 1);
+predmse = zeros(predictions.npoint, 1);
 
 % de-struct for parfor loop
-pred = predpoints.mapped;
+pred = predictions.mapped;
 theta = GEK.theta;
 mu = GEK.mu;
 sighat = GEK.sighat;
@@ -19,7 +19,7 @@ o = ones(samples.npoint,1);
 z = zeros(samples.npoint * samples.ndim,1);
 one = [o;z];
 
-parfor ii = 1:predpoints.npoint
+parfor ii = 1:predictions.npoint
     
     % Find correlation between prediction point and samples
     r = corrmat_pred(samples, theta, pred(ii,:));
@@ -38,11 +38,11 @@ end
 predmse(predmse<eps)=0;
 
 % put results back into main struct
-predpoints.output = predoutput;
-predpoints.mse = predmse;
+predictions.output = predoutput;
+predictions.mse = predmse;
 
 % Sort prediction mse from max to min
-[predpoints.mse_sortval, predpoints.mse_sortindex] = sort(predpoints.mse,'descend');
+[predictions.mse_sortval, predictions.mse_sortindex] = sort(predictions.mse,'descend');
 
 end
 

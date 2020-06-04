@@ -1,4 +1,4 @@
-function [predpoints] = generate_predpoints(samples, param, options)
+function [predictions] = generate_predpoints(samples, param, options)
 % Generate prediction points for GEK
 
 if strcmp(options.objective,'iterate')
@@ -8,7 +8,7 @@ if strcmp(options.objective,'iterate')
     % design parameter. Done using Halton sequences.
     
     % Number of prediction points as specified by user
-    predpoints.npoint = options.npredpoints;
+    predictions.npoint = options.npredpoints;
     
     % Halton sequence. Skip and Leap values defined here
     skip = floor(rand*1e7);
@@ -17,15 +17,15 @@ if strcmp(options.objective,'iterate')
     halton = scramble(halton,'RR2');
     
     % Create prediction points
-    predpoints.raw = net(halton, predpoints.npoint);
+    predictions.raw = net(halton, predictions.npoint);
     
     % Map prediction points to bounds of each parameter
-    [predpoints.mapped] = map_samples(param, predpoints.raw);
+    [predictions.mapped] = map_samples(param, predictions.raw);
     
     % Add original sample points to the prediction points
     % matrix. GEK MSE at these points should be ~0
-    predpoints.mapped = vertcat(predpoints.mapped, samples.input);
-    predpoints.npoint = predpoints.npoint + samples.npoint;
+    predictions.mapped = vertcat(predictions.mapped, samples.input);
+    predictions.npoint = predictions.npoint + samples.npoint;
     
 elseif strcmp(options.objective,'verify')
     % Verify the GEK model by comparing prediction against validation set

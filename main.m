@@ -13,12 +13,14 @@ clear; close all; addpath(genpath('./'));
 options.platform    = 'local'; % platform to run on (iridis/local)
 options.iterno      = 2; %
 
-options.writetofile = false;
-options.nsamplesnew = 60;
-options.nfiles      = 1;
-options.theta       = 'theta01';
-options.npredpoints = 1000;
-options.objective   = 'iterate';
+options.writetofile  = true;
+options.nnextsamples = 60;
+options.nfiles       = 1;
+options.theta        = 'theta01';
+options.npredpoints  = 1000;
+options.objective    = 'iterate';
+options.xcludradmax  = 0.02; % maximum exclusion radius 
+options.xcludtanh    = 3; % tanh factor p. larger = more space b/w samples
 
 options.nsurrogate  = 10;
 options.activesrrgt = 1;
@@ -55,12 +57,19 @@ init_parallel(options);
 [GEK.mu, GEK.sighat] = kriging_mean(samples, GEK.R);
 
 % Generate prediction points for GEK prediction
-[predpoints] = generate_predpoints(samples, param, options);
+[predictions] = generate_predpoints(samples, param, options);
 
 % Make GEK predictions
 fprintf('\n----- Making Predictions -----\n');
-[predpoints] = makeprediction(samples, predpoints, GEK);
+[predictions] = makeprediction(samples, predictions, GEK);
 fprintf('-Complete\n');
+
+% Find next iteration of sample points
+if strcmp(options.objective, 'iterate')
+    fprintf('\n+++++ Selecting Next Iteration Samples +++++\n');
+    [nextsamples] = next_iteration(predictions, options);
+    fprintf('-Complete\n');
+end
 
 
 
