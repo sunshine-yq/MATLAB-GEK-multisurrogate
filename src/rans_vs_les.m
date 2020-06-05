@@ -21,7 +21,7 @@ hump_surface = load('hump_surface.mat');
 hump_surface = hump_surface.hump_surface;
 
 % Number of points to plot contour
-xpoint = 6000;
+xpoint = 1000;
 ypoint = 1000;
 
 % Global limits
@@ -63,7 +63,7 @@ diff_velang  = abs(rans_velang-les_velang);
 diff_objfunc = abs(rans_objfunc-les_objfunc);
 
 %% Find locations of surrogate models
-nmod = 50; % number of models
+nmod = 10; % number of models
 maxrad = 0.01; % max radius
 ymin = 0.00015; % smallest y allowed (expect highest MSE point)
 
@@ -105,7 +105,7 @@ thresh = 0;
 
 p{1}=subplot(3,1,1);
 levels = linspace(thresh,max(diff_velmag,[],'all'),40);
-contourf(X,Y,diff_velmag,levels,'LineColor','none')
+contourf(X,Y,diff_velmag,levels,'LineColor','none','HandleVisibility','off')
 axis equal; hold on;
 title('Difference in Velocity Magnitude - RANS & LES')
 colorbar
@@ -113,7 +113,7 @@ colormap('jet')
 
 p{2}=subplot(3,1,2);
 levels = linspace(thresh,max(diff_velang,[],'all'),40);
-contourf(X,Y,diff_velang,levels,'LineColor','none')
+contourf(X,Y,diff_velang,levels,'LineColor','none','HandleVisibility','off')
 axis equal; hold on;
 title('Difference in Velocity Angle - RANS & LES')
 colorbar
@@ -121,14 +121,14 @@ colormap('jet')
 
 p{3}=subplot(3,1,3);
 levels = linspace(thresh,max(diff_objfunc,[],'all'),40);
-contourf(X,Y,diff_objfunc,levels,'LineColor','none')
+contourf(X,Y,diff_objfunc,levels,'LineColor','none','HandleVisibility','off')
 axis equal; hold on;
 title('Difference in Velocity ObjFunc - RANS & LES')
 colorbar
 colormap('jet')
 
 fig = figure(2);
-contourf(X,Y,rans_objfunc,40,'LineColor','none')
+contourf(X,Y,rans_objfunc,40,'LineColor','none','HandleVisibility','off')
 axis equal; hold on;
 title('RANS objfunc')
 colorbar
@@ -141,7 +141,7 @@ xhump = linspace(xbound(1),xbound(2),1000)';
 yhump = hump_surface(xhump);
 
 for i=1:length(p)
-    area(p{i},xhump,yhump,0,'FaceColor','none')
+    area(p{i},xhump,yhump,0,'FaceColor','none','HandleVisibility','off')
     plot(p{i},model_coor(:,1),model_coor(:,2),'rx','linewidth',3);
     xlabel('x/c');
     ylabel('y/c');
