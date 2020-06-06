@@ -21,7 +21,7 @@ surrogates_xy = surrogates_xy.surrogates_xy;
 %% Save samples to csv files for all surrogate models
 if options.writetofile
     for ii = 1:options.nsurrogates
-        filename = sprintf('Samples/M%.2i/SU2_Input/samples_I01.dat',ii);
+        filename = sprintf('Samples/M%.2i/SU2_Input/samples_M%.2i_I01.dat',ii,ii);
         file = fopen(filename,'w');
         fprintf(file, '%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s \n', ...
             'cb1','sig','cb2','kar','cw2','cw3','cv1','X','Y');

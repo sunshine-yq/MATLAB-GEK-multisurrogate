@@ -16,7 +16,7 @@ if options.writetofile
     
     nextiterno = options.nfiles + 1; % one after current file number
     folder = strcat('Samples/',sprintf('M%.2i',options.activesrrgt),'/SU2_Input');
-    filename = sprintf('samples_I%.2i.dat', nextiterno);
+    filename = sprintf('samples_M%.2i_I%.2i.dat', options.activesrrgt, nextiterno);
     file = fopen(fullfile(folder,filename),'w');
     fprintf(file, '%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s \n', ...
         'cb1','sig','cb2','kar','cw2','cw3','cv1','X','Y');

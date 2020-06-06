@@ -11,7 +11,7 @@ clear; close all; addpath(genpath('./'));
 %% Set Options for running the code
 
 options.nsurrogates  = 10;
-options.activesrrgt  = 4;
+options.activesrrgt  = 2;
 
 options.platform     = 'local';
 options.objective    = 'iterate';
@@ -21,7 +21,7 @@ options.npredpoints  = 1000;
 options.nnextsamples = 60;
 options.theta        = 'theta01';
 
-options.writetofile  = true;
+options.writetofile  = false;
 
 check_options(options);
 
