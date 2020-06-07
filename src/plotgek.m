@@ -54,8 +54,8 @@ for i=1:4
     axis equal
     
     % plot current and new samples
-    plot(samples.input(:,plotpairs(i,1)),samples.input(:,plotpairs(i,2)),'xy','linewidth',1);
-    plot(nextsamples.input(:,plotpairs(i,1)),nextsamples.input(:,plotpairs(i,2)),'*r','linewidth',1)
+    plot(samples.inputmapped(:,plotpairs(i,1)),samples.inputmapped(:,plotpairs(i,2)),'xy','linewidth',1);
+    plot(nextsamples.inputmapped(:,plotpairs(i,1)),nextsamples.inputmapped(:,plotpairs(i,2)),'*r','linewidth',1)
 %     plot(interpx,interpy,'.m');
 end
 

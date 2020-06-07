@@ -16,16 +16,16 @@ if strcmp(options.objective,'iterate')
     halton = haltonset(samples.ndim,'Skip',skip,'Leap',leap);
     halton = scramble(halton,'RR2');
     
-    % Create prediction points
+    % Create prediction points between [0,1] (used in GEK prediction)
     predictions.raw = net(halton, predictions.npoint);
-    
-    % Map prediction points to bounds of each parameter
-    [predictions.mapped] = map_samples(param, predictions.raw);
-    
+       
     % Add original sample points to the prediction points
     % matrix. GEK MSE at these points should be ~0
-    predictions.mapped = vertcat(predictions.mapped, samples.input);
+    predictions.raw = vertcat(predictions.raw, samples.input);
     predictions.npoint = predictions.npoint + samples.npoint;
+    
+    % Map prediction points to bounds of each parameter (used only in plot)
+    [predictions.mapped] = map_samples(param, predictions.raw);
     
 elseif strcmp(options.objective,'verify')
     % Verify the GEK model by comparing prediction against validation set
