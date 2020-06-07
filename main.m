@@ -11,7 +11,7 @@ clear; close all; addpath(genpath('./'));
 %% Set Options for running the code
 
 options.nsurrogates  = 10;
-options.activesrrgt  = 2;
+options.activesrrgt  = 4;
 
 options.platform     = 'local';
 options.objective    = 'iterate';
