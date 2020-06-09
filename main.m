@@ -18,7 +18,7 @@ options.objective    = 'verify';
 
 options.nfiles       = 1;
 options.npredpoints  = 1000;
-options.nnextsamples = 100;
+options.nnextsamples = 50;
 options.theta        = 'theta01';
 
 options.writetofile  = false;
@@ -37,7 +37,7 @@ param.cw2 = 5; param.cw3 = 6; param.cv1 = 7;
 
 % Create baslines samples if at first iteration and stop progressing
 if options.nfiles == 0
-   baseline_samples(param, options);
+   [samples] = baseline_samples(param, options);
    return;
 end
 
@@ -70,7 +70,7 @@ if strcmp(options.objective, 'iterate')
     fprintf('-Complete\n');  
     
 elseif strcmp(options.objective, 'verify')
-    fprintf('\n+++++ Selecting Next Iteration Samples +++++\n');
+    fprintf('\n+++++ Reading Verification Samples +++++\n');
     [verifypoints] = read_verify(param, options);
     nextsamples = [];
     fprintf('-Complete\n');
