@@ -14,7 +14,7 @@ options.nsurrogates  = 10;
 options.activesrrgt  = 1;
 
 options.platform     = 'local';
-options.objective    = 'iterate';
+options.objective    = 'verify';
 
 options.nfiles       = 1;
 options.npredpoints  = 1000;
@@ -37,7 +37,7 @@ param.cw2 = 5; param.cw3 = 6; param.cv1 = 7;
 
 % Create baslines samples if at first iteration and stop progressing
 if options.nfiles == 0
-   baseline_samples(param, options);
+   [samples] = baseline_samples(param, options);
    return;
 end
 
@@ -62,16 +62,23 @@ fprintf('\n----- Making Predictions -----\n');
 [predictions] = make_prediction(samples, predictions, GEK);
 fprintf('-Complete\n');
 
-% Find next iteration of sample points
+% Find next iteration of sample points or load verification samples 
 if strcmp(options.objective, 'iterate')
     fprintf('\n+++++ Selecting Next Iteration Samples +++++\n');
     [nextsamples] = next_iteration(predictions, options);
+    verifypoints = [];
+    fprintf('-Complete\n');  
+    
+elseif strcmp(options.objective, 'verify')
+    fprintf('\n+++++ Reading Verification Samples +++++\n');
+    [verifypoints] = read_verify(param, options);
+    nextsamples = [];
     fprintf('-Complete\n');
 end
 
 % Generate plots if on local
 if strcmp(options.platform, 'local')
-    plotgek(samples, param, predictions, nextsamples, options)
+    plotgek(samples, param, predictions, nextsamples, verifypoints, options)
 end
 
 % Save the workspace variables if on Iridis

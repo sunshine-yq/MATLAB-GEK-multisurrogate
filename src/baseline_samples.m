@@ -1,4 +1,4 @@
-function baseline_samples(param, options)
+function [samples] = baseline_samples(param, options)
 % Create baseline samples for SA design space
 
 npoint = options.nnextsamples;

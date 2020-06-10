@@ -1,4 +1,4 @@
-function [options] = check_options(options)
+function check_options(options)
 % Check options entered correctly
 
 % Check if string options entered correctly
