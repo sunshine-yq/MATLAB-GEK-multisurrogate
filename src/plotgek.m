@@ -92,12 +92,12 @@ for i=1:4
     interpx_gek = predictions.mapped(:,plotpairs(i,1));
     interpy_gek = predictions.mapped(:,plotpairs(i,2));
     interpz_gek = predictions.output;
-    interp_gek = scatteredInterpolant(interpx_gek, interpy_gek, interpz_gek, 'linear', 'nearest');
+    interp_gek = scatteredInterpolant(interpx_gek, interpy_gek, interpz_gek, 'natural', 'nearest');
     
     interpx_full = verifypoints.input(:,plotpairs(i,1));
     interpy_full = verifypoints.input(:,plotpairs(i,2));
     interpz_full = verifypoints.output;
-    interp_full = scatteredInterpolant(interpx_full, interpy_full, interpz_full, 'linear', 'nearest');
+    interp_full = scatteredInterpolant(interpx_full, interpy_full, interpz_full, 'natural', 'nearest');
     
     x = linspace(boundary(plotpairs(i,1),1),boundary(plotpairs(i,1),2),1000);
     y = linspace(boundary(plotpairs(i,2),1),boundary(plotpairs(i,2),2),1000);
@@ -131,12 +131,12 @@ for i=1:2
     interpx_gek = predictions.mapped(:,plotpairs(i,1));
     interpy_gek = predictions.mapped(:,plotpairs(i,2));
     interpz_gek = predictions.output;
-    interp_gek = scatteredInterpolant(interpx_gek, interpy_gek, interpz_gek, 'linear', 'nearest');
+    interp_gek = scatteredInterpolant(interpx_gek, interpy_gek, interpz_gek, 'natural', 'linear');
     
     interpx_full = verifypoints.input(:,plotpairs(i,1));
     interpy_full = verifypoints.input(:,plotpairs(i,2));
     interpz_full = verifypoints.output;
-    interp_full = scatteredInterpolant(interpx_full, interpy_full, interpz_full, 'linear', 'nearest');
+    interp_full = scatteredInterpolant(interpx_full, interpy_full, interpz_full, 'natural', 'linear');
     
     x = linspace(boundary(plotpairs(i,1),1),boundary(plotpairs(i,1),2),1000);
     y = linspace(boundary(plotpairs(i,2),1),boundary(plotpairs(i,2),2),1000);
@@ -148,7 +148,7 @@ for i=1:2
     % plot the prediction surface
     p = subplot(2,2,i);
     mesh(X,Y,Z_gek,'HandleVisibility','off');
-    colorbar;
+    colorbar; colormap('jet');
     xlabel(paramnames(plotpairs(i,1))); ylabel(paramnames(plotpairs(i,2)));
     zlabel('Velocity Function');
     p.FontWeight = 'bold';
@@ -157,11 +157,14 @@ for i=1:2
     % plot the full order surface
     p = subplot(2,2,i+2);
     mesh(X,Y,Z_full,'HandleVisibility','off');
-    colorbar;
+    colorbar; colormap('jet');
     xlabel(paramnames(plotpairs(i,1))); ylabel(paramnames(plotpairs(i,2)));
     zlabel('Velocity Function');
     p.FontWeight = 'bold';
     title('Full Order');
+    hold on
+    plot3(verifypoints.input(:,plotpairs(i,1)),verifypoints.input(:,plotpairs(i,2)), ...
+        verifypoints.output,'.r','linewidth',2,'MarkerSize',12)
     
 end
 
