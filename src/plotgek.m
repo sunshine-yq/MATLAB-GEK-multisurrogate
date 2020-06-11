@@ -154,6 +154,9 @@ for i=1:2
     zlabel('Velocity Function');
     p.FontWeight = 'bold';
     title('Prediction');
+    hold on
+    plot3(predictions.mapped(:,plotpairs(i,1)),predictions.mapped(:,plotpairs(i,2)), ...
+        predictions.output,'ok','linewidth',2,'MarkerSize',5)
     
     % plot the full order surface
     p = subplot(2,2,i+2);
