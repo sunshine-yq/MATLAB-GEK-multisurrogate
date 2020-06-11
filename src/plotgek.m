@@ -54,9 +54,10 @@ for i=1:4
     axis equal
     
     % plot current and new samples
-    plot(samples.input(:,plotpairs(i,1)),samples.input(:,plotpairs(i,2)),'xy','linewidth',1);
-    plot(nextsamples.input(:,plotpairs(i,1)),nextsamples.input(:,plotpairs(i,2)),'*r','linewidth',1)
+    plot(samples.inputmapped(:,plotpairs(i,1)),samples.inputmapped(:,plotpairs(i,2)),'xy','linewidth',1);
+    plot(nextsamples.inputmapped(:,plotpairs(i,1)),nextsamples.inputmapped(:,plotpairs(i,2)),'*r','linewidth',1)
     %     plot(interpx,interpy,'.m');
+    
 end
 
 l = legend('current','new');
@@ -116,7 +117,7 @@ for i=1:4
     axis equal
     
     % plot samples
-    plot(samples.input(:,plotpairs(i,1)),samples.input(:,plotpairs(i,2)),'xr','linewidth',1);
+    plot(samples.inputmapped(:,plotpairs(i,1)),samples.inputmapped(:,plotpairs(i,2)),'xr','linewidth',1);
     %     plot(interpx,interpy,'.m');
 end
 
@@ -153,6 +154,9 @@ for i=1:2
     zlabel('Velocity Function');
     p.FontWeight = 'bold';
     title('Prediction');
+    hold on
+    plot3(predictions.mapped(:,plotpairs(i,1)),predictions.mapped(:,plotpairs(i,2)), ...
+        predictions.output,'ok','linewidth',2,'MarkerSize',5)
     
     % plot the full order surface
     p = subplot(2,2,i+2);

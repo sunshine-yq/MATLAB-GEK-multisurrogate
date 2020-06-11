@@ -1,12 +1,13 @@
 function [predictions] = make_prediction(samples, predictions, GEK)
 % Make GEK predictions on points to find output and MSE
+% this is done on predictions.raw [0,1]
 
 % Initialise arrays to store
 predoutput = zeros(predictions.npoint, 1);
 predmse = zeros(predictions.npoint, 1);
 
 % de-struct for parfor loop
-pred = predictions.mapped;
+pred = predictions.raw;
 theta = GEK.theta;
 mu = GEK.mu;
 sighat = GEK.sighat;

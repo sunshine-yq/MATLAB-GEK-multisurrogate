@@ -11,7 +11,7 @@ clear; close all; addpath(genpath('./'));
 %% Set Options for running the code
 
 options.nsurrogates  = 10;
-options.activesrrgt  = 1;
+options.activesrrgt  = 6;
 
 options.platform     = 'local';
 options.objective    = 'verify';
@@ -19,7 +19,7 @@ options.objective    = 'verify';
 options.nfiles       = 1;
 options.npredpoints  = 1000;
 options.nnextsamples = 50;
-options.theta        = 'theta01';
+options.theta        = '';
 
 options.writetofile  = false;
 
@@ -37,8 +37,8 @@ param.cw2 = 5; param.cw3 = 6; param.cv1 = 7;
 
 % Create baslines samples if at first iteration and stop progressing
 if options.nfiles == 0
-   [samples] = baseline_samples(param, options);
-   return;
+    [samples] = baseline_samples(param, options);
+    return;
 end
 
 % Read the samples
@@ -55,24 +55,25 @@ init_parallel(options);
 [GEK.mu, GEK.sighat] = kriging_mean(samples, GEK.R);
 
 % Generate prediction points for GEK prediction
-[predictions] = generate_predpoints(samples, param, options);
+if strcmp(options.objective, 'iterate')
+    % prediction points from scratch
+    [predictions] = generate_predpoints(samples, param, options);
+elseif strcmp(options.objective, 'verify')
+    % Read verify points and assign prediction points as same
+    [predictions, verifypoints] = read_verify(param, options);
+    nextsamples = [];
+end
 
 % Make GEK predictions
 fprintf('\n----- Making Predictions -----\n');
 [predictions] = make_prediction(samples, predictions, GEK);
 fprintf('-Complete\n');
 
-% Find next iteration of sample points or load verification samples 
+% Find next iteration of sample points if iterating
 if strcmp(options.objective, 'iterate')
     fprintf('\n+++++ Selecting Next Iteration Samples +++++\n');
     [nextsamples] = next_iteration(predictions, options);
     verifypoints = [];
-    fprintf('-Complete\n');  
-    
-elseif strcmp(options.objective, 'verify')
-    fprintf('\n+++++ Reading Verification Samples +++++\n');
-    [verifypoints] = read_verify(param, options);
-    nextsamples = [];
     fprintf('-Complete\n');
 end
 

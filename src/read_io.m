@@ -20,16 +20,16 @@ for i = 1:length(samfiles)
 end
 
 % store sample values in variable
-samples.input(:,param.cb1) = vertcat(samplearray{:,1});
-samples.input(:,param.sig) = vertcat(samplearray{:,2});
-samples.input(:,param.cb2) = vertcat(samplearray{:,3});
-samples.input(:,param.kar) = vertcat(samplearray{:,4});
-samples.input(:,param.cw2) = vertcat(samplearray{:,5});
-samples.input(:,param.cw3) = vertcat(samplearray{:,6});
-samples.input(:,param.cv1) = vertcat(samplearray{:,7});
+samples.inputmapped(:,param.cb1) = vertcat(samplearray{:,1});
+samples.inputmapped(:,param.sig) = vertcat(samplearray{:,2});
+samples.inputmapped(:,param.cb2) = vertcat(samplearray{:,3});
+samples.inputmapped(:,param.kar) = vertcat(samplearray{:,4});
+samples.inputmapped(:,param.cw2) = vertcat(samplearray{:,5});
+samples.inputmapped(:,param.cw3) = vertcat(samplearray{:,6});
+samples.inputmapped(:,param.cv1) = vertcat(samplearray{:,7});
 
 % Obtain number of Samples
-samples.npoint = length(samples.input);
+samples.npoint = length(samples.inputmapped);
 
 %% Read SU2 results as GEK output to be predicted
 % the SU2 output file contains the value of the objective function and the
@@ -64,6 +64,9 @@ samples.outputgrad(:,param.cv1) = vertcat(outputarray{:,10});
 %% Augment sample output for GEK
 % GEK sample size
 samples.npoint_gek = (samples.ndim + 1)*samples.npoint;
+
+% Reverse map samples to [0-1] and adjust gradients
+[samples.input,samples.outputgrad] = revmap_samples(param, samples.inputmapped, samples.outputgrad);
 
 % Normalise the output by it's mean and standard deviation
 samples.output_mean = mean(samples.output);

@@ -1,4 +1,4 @@
-function [verify_points] = read_verify(param, options)
+function [predictions, verify_points] = read_verify(param, options)
 % Read the SU2 verify input and output files.
 % These are the points against which GEK will be verified
 
@@ -40,5 +40,15 @@ fclose(fileID);
 
 % store outputs in one variable
 verify_points.output = vertcat(outputarray{:,3});
+
+%% Assign predictions points for GEK
+% These should be the same as input of the verify points to make comparison
+% with verify space consistent
+predictions.mapped = verify_points.input;
+predictions.npoint = size(predictions.mapped,1);
+
+% Map back to [0,1]
+predictions.raw = revmap_samples(param, predictions.mapped);
+
 end
 
