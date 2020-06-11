@@ -15,7 +15,7 @@ if ~isempty(options.theta)
 else
     % Do Genetic Algorithm search for best theta to maximise ln likelihood
     % Define lower and upper search boundary of the log10(theta)
-    theta_searchbound = [-5,5];
+    theta_searchbound = [-6,6];
     
     % Find optimum log10(theta) which maximises the ln likelihood function
     % theta is an array with same length as number of dimension; a theta is

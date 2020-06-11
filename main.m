@@ -11,10 +11,10 @@ clear; close all; addpath(genpath('./'));
 %% Set Options for running the code
 
 options.nsurrogates  = 10;
-options.activesrrgt  = 6;
+options.activesrrgt  = 1;
 
 options.platform     = 'local';
-options.objective    = 'verify';
+options.objective    = 'iterate';
 
 options.nfiles       = 1;
 options.npredpoints  = 1000;
@@ -84,7 +84,7 @@ end
 
 % Save the workspace variables if on Iridis
 if strcmp(options.platform, 'iridis')
-    save(sprintf('Iridisout/allvars_%s',options.objective));
+    save(sprintf('Iridisout/allvars_%s_M%.2i',options.objective,options.activesrrgt));
 end
 
 % Confirm success
