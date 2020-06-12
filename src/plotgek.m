@@ -29,7 +29,7 @@ paramnames = fieldnames(param);
 
 % Plot figures
 fig = figure;
-sgtitle(sprintf('GEK Prediction MSE - Surrogate M%.2i',options.activesrrgt));
+sgtitle(sprintf('GEK Prediction MSE - Surrogate M%.2i Iteration I%.2i',options.activesrrgt,options.nfiles));
 addToolbarExplorationButtons(fig);
 
 for i=1:4
@@ -86,12 +86,12 @@ paramnames = fieldnames(param);
 
 % Figure 1 difference contour
 fig1 = figure(1);
-sgtitle(sprintf('Velocity Function: |GEK Prediction - Full Order| - Surrogate M%.2i',options.activesrrgt));
+sgtitle(sprintf('Velocity Function: |GEK Prediction - Full Order| - Surrogate M%.2i Iteration I%.2i',options.activesrrgt,options.nfiles));
 addToolbarExplorationButtons(fig1);
 
 % Figure 2 actual value pointcloud
 fig2 = figure(2);
-sgtitle(sprintf('Velocity Function: Absolute Values - Surrogate M%.2i',options.activesrrgt));
+sgtitle(sprintf('Velocity Function: Absolute Values - Surrogate M%.2i Iteration I%.2i',options.activesrrgt,options.nfiles));
 addToolbarExplorationButtons(fig2);
 
 for i=1:4
