@@ -11,17 +11,18 @@ clear; close all; addpath(genpath('./'));
 %% Set Options for running the code
 
 options.nsurrogates  = 10;
-options.activesrrgt  = 5;
+options.activesrrgt  = 1;
 
 options.platform     = 'local';
 options.objective    = 'verify';
 
-options.nfiles       = 1;
+options.nfiles       = 2;
 options.npredpoints  = 1000;
 options.nnextsamples = 50;
-options.theta        = '';
+options.theta        = 'theta01';
 
 options.writetofile  = false;
+options.savefigures  = true;
 
 check_options(options);
 

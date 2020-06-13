@@ -140,9 +140,13 @@ p{4} = fig.CurrentAxes;
 xhump = linspace(xbound(1),xbound(2),1000)';
 yhump = hump_surface(xhump);
 
+surrogates_xy = load('surrogates_xy.mat');
+surrogates_xy = surrogates_xy.surrogates_xy;
+
 for i=1:length(p)
     area(p{i},xhump,yhump,0,'FaceColor','none','HandleVisibility','off')
     plot(p{i},model_coor(:,1),model_coor(:,2),'rx','linewidth',3);
+    plot(p{i},surrogates_xy(:,1),surrogates_xy(:,2),'ko','linewidth',3);
     xlabel('x/c');
     ylabel('y/c');
 end

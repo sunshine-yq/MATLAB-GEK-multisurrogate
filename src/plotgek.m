@@ -3,16 +3,41 @@ function [] = plotgek(samples, param, predictions, nextsamples, verifypoints, op
 
 close all;
 
-% Depending on objective, choose what to plot
+% Depending on objective, choose what to plot and save png
 if strcmp(options.objective, 'iterate')
-    plot_mse(samples, param, predictions, nextsamples, options);
+    [fig1] = plot_mse(samples, param, predictions, nextsamples, options);
+    
+    if options.savefigures
+        if ~exist(sprintf('Figures/M%.2i/I%.2i',options.activesrrgt, options.nfiles), 'dir')
+            mkdir(sprintf('Figures/M%.2i/I%.2i',options.activesrrgt, options.nfiles))
+        end
+        figsave = sprintf('Figures/M%.2i/I%.2i/M%.2i_I%.2i_Iterate',...
+            options.activesrrgt, options.nfiles, options.activesrrgt, options.nfiles);
+        set(fig1, 'Position', get(0, 'Screensize'));
+        exportgraphics(fig1,strcat(figsave,'.png'),'Resolution',300);
+        close all;
+    end
+    
 elseif strcmp(options.objective, 'verify')
-    plot_ver(samples, param, predictions, verifypoints, options);
+    [fig1,fig2] = plot_ver(samples, param, predictions, verifypoints, options);
+    
+    if options.savefigures
+        if ~exist(sprintf('Figures/M%.2i/I%.2i',options.activesrrgt, options.nfiles), 'dir')
+            mkdir(sprintf('Figures/M%.2i/I%.2i',options.activesrrgt, options.nfiles))
+        end
+        figsave = sprintf('Figures/M%.2i/I%.2i/M%.2i_I%.2i',...
+            options.activesrrgt, options.nfiles, options.activesrrgt, options.nfiles);
+        set(fig1, 'Position', get(0, 'Screensize'));
+        set(fig2, 'Position', get(0, 'Screensize'));
+        exportgraphics(fig1,strcat(figsave,'_verdiff.png'),'Resolution',300);
+        exportgraphics(fig2,strcat(figsave,'_verpc.png'),'Resolution',300);
+        close all;
+    end
 end
 end
 
 %% MSE Plot
-function [] = plot_mse(samples, param, predictions, nextsamples, options)
+function [fig1] = plot_mse(samples, param, predictions, nextsamples, options)
 % Plot MSE values of the prediction. 4 subplots for all 7 SA parameters
 
 % Get the boundaries of the design parameters for plotting
@@ -28,9 +53,9 @@ plotpairs(4,:) = [param.cw2 param.cb2];
 paramnames = fieldnames(param);
 
 % Plot figures
-fig = figure;
+fig1 = figure;
 sgtitle(sprintf('GEK Prediction MSE - Surrogate M%.2i Iteration I%.2i',options.activesrrgt,options.nfiles));
-addToolbarExplorationButtons(fig);
+addToolbarExplorationButtons(fig1);
 
 for i=1:4
     % Interpolate the mse
@@ -67,7 +92,7 @@ l.Position = [0.829 0.927 0.145 0.045];
 end
 
 %% Verify Plot
-function [] = plot_ver(samples, param, predictions, verifypoints, options)
+function [fig1,fig2] = plot_ver(samples, param, predictions, verifypoints, options)
 % Plot velocity objective function: prediction vs full order
 % Difference contour between GEK and Full Order
 % Actual Values as pointcloud
@@ -137,7 +162,6 @@ for i=1:4
     xlabel(paramnames(plotpairs(i,1))); ylabel(paramnames(plotpairs(i,2)));
     zlabel('Velocity Function');
     p.FontWeight = 'bold';
-    title('Prediction');
     hold on; grid
     plot3(verifypoints.input(:,plotpairs(i,1)),verifypoints.input(:,plotpairs(i,2)), ...
         verifypoints.output,'.r','linewidth',2,'MarkerSize',12)
