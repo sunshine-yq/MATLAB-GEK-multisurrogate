@@ -1,6 +1,7 @@
 function [samples] = baseline_samples(param, options)
 % Create baseline samples for SA design space
 
+nsurrogates = 15;
 npoint = options.nnextsamples;
 ndim   = length(fieldnames(param));
 % Halton sequence
@@ -20,7 +21,7 @@ surrogates_xy = surrogates_xy.surrogates_xy;
 
 %% Save samples to csv files for all surrogate models
 if options.writetofile
-    for ii = 1:options.nsurrogates
+    for ii = 1:nsurrogates
         filename = sprintf('Samples/M%.2i/SU2_Input/samples_M%.2i_I01.dat',ii,ii);
         file = fopen(filename,'w');
         fprintf(file, '%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s,%10s \n', ...
